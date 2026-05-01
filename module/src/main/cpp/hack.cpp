@@ -1,6 +1,6 @@
 //
 // Created by Perfare on 2020/7/4.
-// Optimized for Subway Surfers Testing
+// Reverted to original folder directory for Subway Surfers Test
 //
 
 #include "hack.h"
@@ -23,23 +23,23 @@ void hack_start(const char *game_data_dir) {
     LOGI("Blue Box: Subway Surfers Test Started");
     bool load = false;
 
-    // 1. Wait 10 seconds for the game to load
+    // Wait 10 seconds for the game to initialize
     std::this_thread::sleep_for(std::chrono::seconds(10));
 
     for (int i = 0; i < 30; i++) {
-        // Subway Surfers uses the standard name
+        // Subway Surfers uses the standard il2cpp name
         void *handle = xdl_open("libil2cpp.so", 0);
         
         if (handle) {
-            LOGI("libil2cpp found! Dumping now...");
+            LOGI("libil2cpp found! Initializing API...");
             
             il2cpp_api_init(handle);
             
-            // 2. DIRECTORY CHANGE: 
-            // We are sending the dump to /sdcard/Download/ for easy checking
-            il2cpp_dump("/sdcard/Download/");
+            // REVERTED: Using the original game_data_dir
+            // The file will be in /data/data/com.kiloo.subwaysurf/
+            il2cpp_dump(game_data_dir);
             
-            LOGI("Dump Successful! Check your Downloads folder.");
+            LOGI("Dump Successful in internal game directory!");
             load = true;
             break; 
         } else {
@@ -48,7 +48,7 @@ void hack_start(const char *game_data_dir) {
     }
 
     if (!load) {
-        LOGE("Could not find libil2cpp.so in Subway Surfers.");
+        LOGE("Could not find libil2cpp.so");
     }
 }
 
