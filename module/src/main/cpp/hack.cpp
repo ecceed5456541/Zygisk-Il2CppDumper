@@ -1,6 +1,6 @@
 //
 // Created by Perfare on 2020/7/4.
-// Deep Stealth Version for Carrom Gold Module 1419
+// Optimized for Carrom Gold Module 1419
 //
 
 #include "hack.h"
@@ -20,42 +20,39 @@
 #include <chrono>
 
 void hack_start(const char *game_data_dir) {
-    LOGI("Blue Box Dumper: Deep Stealth Mode Active");
+    LOGI("Blue Box Dumper: Starting Stealth Thread");
     bool load = false;
 
-    // 1. EXTENDED INITIAL SLEEP
-    // We wait 15 seconds before doing anything. 
-    // This lets the game finish its startup integrity checks.
-    std::this_thread::sleep_for(std::chrono::seconds(15));
+    // 1. Initial 20-second wait to let the game finish security checks
+    // Stay on the main menu during this time!
+    std::this_thread::sleep_for(std::chrono::seconds(20));
 
     for (int i = 0; i < 40; i++) {
-        // Using the exact module name you provided
+        // Using the exact Gold Module library name you specified
         void *handle = xdl_open("libgame-CARROM-GooglePlay-Gold-Release-Module-1419.so", 0);
         
         if (handle) {
-            LOGI("Library found! Waiting 10 seconds for decryption to finalize...");
+            LOGI("Library found! Initializing dump...");
             
-            // 2. STABILITY SLEEP
-            // After finding the library, wait again to ensure memory is fully decrypted
-            std::this_thread::sleep_for(std::chrono::seconds(10));
+            // Wait 5 seconds after finding it to ensure memory is stable
+            std::this_thread::sleep_for(std::chrono::seconds(5));
             
             il2cpp_api_init(handle);
             
-            // 3. INTERNAL DUMP
-            // Dumping to the game's private folder to avoid permission errors
+            // SAVING TO ORIGINAL DIRECTORY: /data/data/[package_name]/
             il2cpp_dump(game_data_dir);
             
-            LOGI("Dump Successful! Check /data/data/com.miniclip.carrom/");
+            LOGI("Dump Successful in internal directory!");
             load = true;
-            break; 
+            break; // Stop the loop and the thread once finished
         } else {
-            // Keep checking once per second
+            // Check once per second
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 
     if (!load) {
-        LOGE("Failed to find Gold Module after 40 attempts.");
+        LOGE("Could not find the library after 40 seconds.");
     }
 }
 
@@ -182,4 +179,3 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     return JNI_VERSION_1_6;
 }
 #endif
-
