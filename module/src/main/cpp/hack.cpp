@@ -1,6 +1,6 @@
 //
 // Created by Perfare on 2020/7/4.
-// Optimized for Carrom Gold Module 1419
+// Deep Stealth Version for Carrom Gold Module 1419
 //
 
 #include "hack.h"
@@ -20,37 +20,42 @@
 #include <chrono>
 
 void hack_start(const char *game_data_dir) {
-    LOGI("Blue Box Dumper: Thread Started");
+    LOGI("Blue Box Dumper: Deep Stealth Mode Active");
     bool load = false;
 
-    // Loop for 30 seconds, checking every 1 second
-    // This prevents the game from crashing during the initial security splash screens
-    for (int i = 0; i < 30; i++) {
-        // Targeting your specific Gold Module library name
+    // 1. EXTENDED INITIAL SLEEP
+    // We wait 15 seconds before doing anything. 
+    // This lets the game finish its startup integrity checks.
+    std::this_thread::sleep_for(std::chrono::seconds(15));
+
+    for (int i = 0; i < 40; i++) {
+        // Using the exact module name you provided
         void *handle = xdl_open("libgame-CARROM-GooglePlay-Gold-Release-Module-1419.so", 0);
         
         if (handle) {
-            LOGI("Found Gold Library! Initializing Dump...");
+            LOGI("Library found! Waiting 10 seconds for decryption to finalize...");
             
-            // Short 2-second sleep to ensure the library is fully mapped in memory
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            // 2. STABILITY SLEEP
+            // After finding the library, wait again to ensure memory is fully decrypted
+            std::this_thread::sleep_for(std::chrono::seconds(10));
             
             il2cpp_api_init(handle);
             
-            // Saving to the internal directory: /data/data/com.miniclip.carrom/
+            // 3. INTERNAL DUMP
+            // Dumping to the game's private folder to avoid permission errors
             il2cpp_dump(game_data_dir);
             
-            LOGI("Dump Completed Successfully in %s", game_data_dir);
+            LOGI("Dump Successful! Check /data/data/com.miniclip.carrom/");
             load = true;
-            break;
+            break; 
         } else {
-            // Wait 1 second before trying again
+            // Keep checking once per second
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 
     if (!load) {
-        LOGE("Error: Could not find libgame-CARROM-GooglePlay-Gold-Release-Module-1419.so after 30s");
+        LOGE("Failed to find Gold Module after 40 attempts.");
     }
 }
 
@@ -177,3 +182,4 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     return JNI_VERSION_1_6;
 }
 #endif
+
