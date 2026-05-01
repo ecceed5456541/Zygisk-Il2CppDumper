@@ -1,6 +1,6 @@
 //
 // Created by Perfare on 2020/7/4.
-// Optimized for Carrom Gold Module 1419
+// Optimized for Subway Surfers Testing
 //
 
 #include "hack.h"
@@ -20,39 +20,35 @@
 #include <chrono>
 
 void hack_start(const char *game_data_dir) {
-    LOGI("Blue Box Dumper: Starting Stealth Thread");
+    LOGI("Blue Box: Subway Surfers Test Started");
     bool load = false;
 
-    // 1. Initial 20-second wait to let the game finish security checks
-    // Stay on the main menu during this time!
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+    // 1. Wait 10 seconds for the game to load
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
-    for (int i = 0; i < 40; i++) {
-        // Using the exact Gold Module library name you specified
-        void *handle = xdl_open("libgame-CARROM-GooglePlay-Gold-Release-Module-1419.so", 0);
+    for (int i = 0; i < 30; i++) {
+        // Subway Surfers uses the standard name
+        void *handle = xdl_open("libil2cpp.so", 0);
         
         if (handle) {
-            LOGI("Library found! Initializing dump...");
-            
-            // Wait 5 seconds after finding it to ensure memory is stable
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+            LOGI("libil2cpp found! Dumping now...");
             
             il2cpp_api_init(handle);
             
-            // SAVING TO ORIGINAL DIRECTORY: /data/data/[package_name]/
-            il2cpp_dump(game_data_dir);
+            // 2. DIRECTORY CHANGE: 
+            // We are sending the dump to /sdcard/Download/ for easy checking
+            il2cpp_dump("/sdcard/Download/");
             
-            LOGI("Dump Successful in internal directory!");
+            LOGI("Dump Successful! Check your Downloads folder.");
             load = true;
-            break; // Stop the loop and the thread once finished
+            break; 
         } else {
-            // Check once per second
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 
     if (!load) {
-        LOGE("Could not find the library after 40 seconds.");
+        LOGE("Could not find libil2cpp.so in Subway Surfers.");
     }
 }
 
